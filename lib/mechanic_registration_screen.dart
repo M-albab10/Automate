@@ -8,7 +8,7 @@ class MechanicRegisterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        primaryColor: Color.fromARGB(255, 41, 225, 139),
+        primaryColor: const Color.fromARGB(255, 41, 225, 139),
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.white,
         inputDecorationTheme: InputDecorationTheme(
@@ -36,15 +36,17 @@ class MechanicRegisterScreen extends StatelessWidget {
           hintStyle: TextStyle(color: Colors.grey.shade400),
         ),
       ),
-      home: MechanicRegistrationScreen(),
+      home: const MechanicRegistrationScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
 class MechanicRegistrationScreen extends StatefulWidget {
+  const MechanicRegistrationScreen({super.key});
+
   @override
-  _MechanicRegistrationScreenState createState() =>
+  State<MechanicRegistrationScreen> createState() =>
       _MechanicRegistrationScreenState();
 }
 
@@ -97,7 +99,7 @@ class _MechanicRegistrationScreenState
                     width: 150,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withAlpha((0.1*255).floor()),
                     ),
                   ),
                 ),
@@ -109,12 +111,12 @@ class _MechanicRegistrationScreenState
                     width: 120,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withAlpha((0.1*255).floor()),
                     ),
                   ),
                 ),
                 SafeArea(
-                  child: Container(
+                  child: SizedBox(
                     height: 200,
                     child: Center(
                       child: Column(
@@ -142,7 +144,7 @@ class _MechanicRegistrationScreenState
                               ),
                             ),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           const Text(
                             'Automate',
                             style: TextStyle(
@@ -167,7 +169,7 @@ class _MechanicRegistrationScreenState
               ],
             ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -182,38 +184,38 @@ class _MechanicRegistrationScreenState
                         letterSpacing: 0.5,
                       ),
                     ),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
                     _buildFormField(
                       controller: _usernameController,
                       label: 'Username',
                       hintText: 'Enter username',
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     _buildFormField(
                       controller: _nameController,
                       label: 'Full Name',
                       hintText: 'Enter your full name',
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     _buildFormField(
                       controller: _mobileController,
                       label: 'Mobile number',
                       hintText: 'Enter number',
                       keyboardType: TextInputType.phone,
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     _buildFormField(
                       controller: _locationController,
                       label: 'Location',
                       hintText: 'Enter your location',
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     _buildFormField(
                       controller: _workshopController,
                       label: 'Workshop Name',
                       hintText: 'Enter workshop name',
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     _buildFormField(
                       controller: _passwordController,
                       label: 'Password',
@@ -234,7 +236,7 @@ class _MechanicRegistrationScreenState
                         },
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     _buildFormField(
                       controller: _confirmPasswordController,
                       label: 'Confirm Password',
@@ -273,7 +275,7 @@ class _MechanicRegistrationScreenState
                                 MaterialTapTargetSize.shrinkWrap,
                           ),
                         ),
-                        Text('agree on terms and '),
+                        const Text('agree on terms and '),
                         GestureDetector(
                           onTap: () {
                             // Handle terms tap
@@ -288,7 +290,7 @@ class _MechanicRegistrationScreenState
                         ),
                       ],
                     ),
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
                     Row(
                       children: [
                         Expanded(
@@ -309,9 +311,9 @@ class _MechanicRegistrationScreenState
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color.fromARGB(255, 208, 63, 2),
+                              backgroundColor: const Color.fromARGB(255, 208, 63, 2),
                               foregroundColor: Colors.white,
-                              padding: EdgeInsets.symmetric(vertical: 14),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(25),
                               ),

@@ -1,12 +1,9 @@
 import 'package:automate/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'navbar.dart';
-import 'profile_screen.dart';
-import 'cars_screen.dart';
-import 'chat_screen.dart';
 
 class OrdersScreen extends StatelessWidget {
-  const OrdersScreen({Key? key}) : super(key: key);
+  const OrdersScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,10 +1,13 @@
 import 'package:automate/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'register_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+final _firebase = FirebaseAuth.instance;
 
 class Logining extends StatelessWidget {
-  Logining(this.register, {Key? key}) : super(key: key);
-  void Function() register;
+  const Logining(this.register, {super.key});
+  final void Function() register;
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +33,12 @@ class Logining extends StatelessWidget {
 }
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() {
+    return _LoginScreenState();
+  }
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -42,34 +47,59 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   bool _passwordVisible = false;
   bool _keepMeLoggedIn = false;
-
+  var _enteredEmail = '';
+  var _enteredPassword = '';
   void _togglePasswordVisibility() {
     setState(() {
       _passwordVisible = !_passwordVisible;
     });
   }
 
-  void _performLogin() {
-    if (_formKey.currentState!.validate()) {
+  Future<bool> _performLogin() async {
+    final isValid = _formKey.currentState!.validate();
+    if (!isValid) return false;
+
+    _formKey.currentState!.save();
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final userCredential = await _firebase.signInWithEmailAndPassword(
+        email: _enteredEmail,
+        password: _enteredPassword,
+      );
+    } on FirebaseAuthException catch (error) {
+      if (error.code == 'user-not-found') {
+        print(error);
+      }
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(error.message ?? 'Authentcation failed.'),
+        ),
+      );
       setState(() {
-        _isLoading = true;
-      });
-      Future.delayed(const Duration(seconds: 2), () {
-        setState(() {
-          _isLoading = false;
-        });
-      });
+      _isLoading = false;
+    });
+      return false;
     }
+    setState(() {
+      _isLoading = false;
+    });
+    return true;
   }
 
   @override
   Widget build(BuildContext context) {
+    final phoneWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: const Color(0xFFF3F6F9),
       body: Center(
         child: SingleChildScrollView(
           child: Container(
-            width: 386,
+            width: phoneWidth,
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
             margin: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -77,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
               borderRadius: BorderRadius.circular(30),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
+                  color: Colors.black.withAlpha((0.06 * 255).floor()),
                   blurRadius: 24,
                   offset: const Offset(0, 8),
                 ),
@@ -107,12 +137,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       TextFormField(
                         decoration: const InputDecoration(
-                          hintText: "Username",
+                          hintText: "Email",
                           prefixIcon: Icon(Icons.person_outline),
                         ),
-                        validator: (value) => value?.isEmpty == true
-                            ? 'Please enter your username'
-                            : null,
+                        keyboardType: TextInputType.emailAddress,
+                        autocorrect: false,
+                        textCapitalization: TextCapitalization.none,
+                        validator: (value) =>
+                            value?.isEmpty == true || !value!.contains("@")
+                                ? 'Please enter correct Email'
+                                : null,
+                        onSaved: (value) {
+                          _enteredEmail = value!;
+                        },
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
@@ -134,6 +171,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         validator: (value) => value?.isEmpty == true
                             ? 'Please enter your password'
                             : null,
+                        onSaved: (value) {
+                          _enteredPassword = value!;
+                        },
                       ),
                       const SizedBox(height: 8),
                       Align(
@@ -178,16 +218,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: double.infinity,
                         height: 48,
                         child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const ProfileScreen()),
-                            );
+                          onPressed: () async {
+                            if (await _performLogin()) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ProfileScreen()),
+                              );
+                            }
                           },
                           //  _isLoading ? null : _performLogin,
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.blue,
+                            backgroundColor: Colors.blue,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),

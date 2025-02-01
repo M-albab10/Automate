@@ -13,8 +13,8 @@ class CustomBottomNavBar extends StatelessWidget {
   const CustomBottomNavBar({
     required this.currentIndex,
     required this.onTap,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   // Fixed the order to match with bottom navigation items
   static final List<Map<String, dynamic>> _navigationItems = [
@@ -51,7 +51,7 @@ class CustomBottomNavBar extends StatelessWidget {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withAlpha((0.1*255).floor()),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -101,8 +101,9 @@ class CustomBottomNavBar extends StatelessWidget {
   }
 
   void _navigateToScreen(BuildContext context, int index) {
-    if (index == currentIndex)
+    if (index == currentIndex) {
       return; // Don't navigate if already on the screen
+    }
 
     Navigator.push(
       context,
@@ -132,7 +133,7 @@ class CustomBottomNavBar extends StatelessWidget {
 
 // Example usage:
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();

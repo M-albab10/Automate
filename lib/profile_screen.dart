@@ -2,12 +2,9 @@ import 'package:automate/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
 import 'navbar.dart';
-import 'cars_screen.dart';
-import 'chat_screen.dart';
-import 'order_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -17,13 +14,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final String userName = "John Smith";
   final String phoneNumber = "0554399445";
   final String email = "john.smith@gmail.com";
-  int _currentIndex = 3; // Profile tab index
+  // final int _currentIndex = 3; // Profile tab index
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: AppBarWidget(pageName: 'Profile'),
+      appBar: const AppBarWidget(pageName: 'Profile'),
       body: RefreshIndicator(
         onRefresh: _handleRefresh,
         child: SingleChildScrollView(
@@ -61,11 +58,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _handleNavigation(int index) {
-    if (index != _currentIndex) {
-      Navigator.pop(context); // Return to MainScreen
-    }
-  }
+  // void _handleNavigation(int index) {
+  //   if (index != _currentIndex) {
+  //     Navigator.pop(context); // Return to MainScreen
+  //   }
+  // }
 
   Widget _buildProfileHeader() {
     return Container(
@@ -89,10 +86,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: Colors.white,
                   shape: BoxShape.circle,
                   border: Border.all(
-                      color: Color.fromARGB(255, 230, 227, 227), width: 3),
+                      color: const Color.fromARGB(255, 230, 227, 227), width: 3),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.withAlpha((0.3*255).floor()),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -121,7 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withAlpha(25),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
@@ -176,7 +173,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.1),
+              color: Colors.blue.withAlpha(25),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(icon, color: Colors.blue, size: 20),
@@ -263,7 +260,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       borderRadius: BorderRadius.circular(15),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.05),
+          color: Colors.black.withAlpha((0.05*255).floor()),
           blurRadius: 10,
           offset: const Offset(0, 5),
         ),

@@ -5,10 +5,10 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final bool implyLeading;
 
   const AppBarWidget({
-    Key? key,
+    super.key,
     required this.pageName,
     this.implyLeading = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

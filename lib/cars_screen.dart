@@ -3,7 +3,7 @@ import 'navbar.dart';
 import 'app_bar.dart';
 
 class CarScreen extends StatelessWidget {
-  const CarScreen({Key? key}) : super(key: key);
+  const CarScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

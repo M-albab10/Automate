@@ -1,12 +1,10 @@
 import 'package:automate/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'navbar.dart';
-import 'cars_screen.dart';
-import 'profile_screen.dart';
-import 'order_screen.dart';
+
 
 class ChatScreen extends StatelessWidget {
-  const ChatScreen({Key? key}) : super(key: key);
+  const ChatScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +22,7 @@ class ChatScreen extends StatelessWidget {
         'image': 'assets/images/user2.png'
       },
       {
-        'name': 'Hamad Allaebon',
+        'name': 'Hamad',
         'message': 'بدون القطع كم ؟',
         'date': '10/09/2024',
         'image': 'assets/images/user3.png'
@@ -32,7 +30,7 @@ class ChatScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBarWidget(pageName: 'Chat'),
+      appBar: const AppBarWidget(pageName: 'Chat'),
       body: Column(
         children: [
           Padding(
