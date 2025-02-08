@@ -1,0 +1,44 @@
+plugins {
+    id "com.android.application"
+    id 'com.google.gms.google-services'
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+android {
+    namespace = "com.example.automate"
+    compileSdk = 34  // Update this line
+    ndkVersion = flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17  // Update this
+        targetCompatibility = JavaVersion.VERSION_17  // Update this
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'  // Update this
+    }
+
+    defaultConfig {
+        applicationId = "com.example.automate"
+        minSdk = 23
+        targetSdk = 34  // Update this line
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.debug
+        }
+    }
+}
+
+dependencies {
+    implementation platform('com.google.firebase:firebase-bom:32.7.0')
+    implementation 'com.google.firebase:firebase-analytics'
+}
+
+flutter {
+    source = "../.."
+}
