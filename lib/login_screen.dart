@@ -6,7 +6,7 @@ import 'services/auth_service.dart';
 final TextEditingController _emailController = TextEditingController();
 
 class Logining extends StatelessWidget {
-  const Logining(this.register, {super.key});
+  Logining(this.register, {super.key});
   final void Function() register;
 
   @override
@@ -66,9 +66,12 @@ class _LoginScreenState extends State<LoginScreen> {
           password: _passwordController.text,
         );
 
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const ProfileScreen()),
+          MaterialPageRoute(
+            builder: (context) =>
+                const ProfileScreen(), // Remove authService parameter
+          ),
         );
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(

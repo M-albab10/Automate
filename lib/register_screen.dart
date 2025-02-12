@@ -306,8 +306,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ProfileScreen()),
+                                      builder: (context) =>
+                                          const ProfileScreen(), // Remove authService parameter
+                                    ),
                                   );
                                 } catch (e) {
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -432,9 +433,63 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           obscureText: obscureText,
           keyboardType: keyboardType,
           style: const TextStyle(fontSize: 15),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return '$label is required';
+            }
+
+            // Email validation
+            if (label == 'Email') {
+              final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+              if (!emailRegex.hasMatch(value)) {
+                return 'Please enter a valid email address';
+              }
+            }
+
+            // Mobile number validation
+            if (label == 'Mobile number') {
+              final phoneRegex = RegExp(r'^\d{10}$');
+              if (!phoneRegex.hasMatch(value)) {
+                return 'Please enter a valid 10-digit phone number';
+              }
+            }
+
+            // Username validation
+            if (label == 'Username') {
+              if (value.length < 3) {
+                return 'Username must be at least 3 characters long';
+              }
+              if (value.length > 30) {
+                return 'Username must be less than 30 characters';
+              }
+            }
+
+            // Password validation
+            if (label == 'Password') {
+              if (value.length < 6) {
+                return 'Password must be at least 6 characters long';
+              }
+              if (!value.contains(RegExp(r'[A-Z]'))) {
+                return 'Password must contain at least one uppercase letter';
+              }
+              if (!value.contains(RegExp(r'[0-9]'))) {
+                return 'Password must contain at least one number';
+              }
+            }
+
+            // Confirm Password validation
+            if (label == 'Confirm Password') {
+              if (value != _passwordController.text) {
+                return 'Passwords do not match';
+              }
+            }
+
+            return null;
+          },
           decoration: InputDecoration(
             hintText: hintText,
             suffixIcon: suffixIcon,
+            errorMaxLines: 2, // Allow error text to wrap
           ),
         ),
       ],

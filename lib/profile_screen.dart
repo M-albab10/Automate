@@ -2,6 +2,7 @@ import 'package:automate/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
 import 'navbar.dart';
+import 'services/auth_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -11,13 +12,49 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final String userName = "John Smith";
-  final String phoneNumber = "0554399445";
-  final String email = "john.smith@gmail.com";
-  final int _currentIndex = 3; // Profile tab index
+  final AuthService _authService = AuthService(); // Use existing AuthService
+  Map<String, dynamic>? userData;
+  bool isLoading = true;
+  final int _currentIndex = 3;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      final userDetails = await _authService.getUserDetails();
+      setState(() {
+        userData = userDetails;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error loading profile: $e')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // Use null-safe access to userData
+    final String userName = userData?['username'] ?? 'Loading...';
+    final String phoneNumber = userData?['phoneNumber'] ?? 'Loading...';
+    final String email = userData?['email'] ?? 'Loading...';
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: const AppBarWidget(pageName: 'Profile'),
@@ -29,42 +66,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                _buildProfileHeader(),
+                _buildProfileHeader(userName),
                 const SizedBox(height: 16),
-                _buildProfileInfo(),
+                _buildProfileInfo(userName, phoneNumber, email),
                 const SizedBox(height: 20),
-                _buildActionButtons(),
+                _buildActionButtons(context),
               ],
             ),
           ),
         ),
       ),
       bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: 3, // Correct index for Chat tab
+        currentIndex: _currentIndex,
         onTap: (index) {},
       ),
-
-      //  CustomBottomNavBar(
-      //   currentIndex: _currentIndex,
-      //   onTap: (index) => _handleNavigation(index),
-      // ),
     );
   }
 
   Future<void> _handleRefresh() async {
-    await Future.delayed(const Duration(seconds: 1));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Profile refreshed')),
-    );
-  }
-
-  void _handleNavigation(int index) {
-    if (index != _currentIndex) {
-      Navigator.pop(context); // Return to MainScreen
+    await _loadUserData();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profile refreshed')),
+      );
     }
   }
 
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(String userName) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(
@@ -78,7 +106,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Stack(
             alignment: Alignment.center,
             children: [
-              // Profile Image
               Container(
                 width: 120,
                 height: 120,
@@ -86,8 +113,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   color: Colors.white,
                   shape: BoxShape.circle,
                   border: Border.all(
-                      color: const Color.fromARGB(255, 230, 227, 227),
-                      width: 3),
+                    color: const Color.fromARGB(255, 230, 227, 227),
+                    width: 3,
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.3),
@@ -103,7 +131,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
-              // Camera Icon for Editing
               Positioned(
                 right: 0,
                 bottom: 0,
@@ -148,7 +175,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileInfo() {
+  Widget _buildProfileInfo(String userName, String phoneNumber, String email) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: _containerDecoration(),
@@ -205,7 +232,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(BuildContext context) {
     return Column(
       children: [
         ElevatedButton(
@@ -223,16 +250,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         const SizedBox(height: 12),
         ElevatedButton(
-          onPressed: () {
-            Navigator.popUntil(context, (route) => route.isFirst);
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LoginScreen(() {
-                  Navigator.pushNamed(context, '/register');
-                }),
-              ),
-            );
+          onPressed: () async {
+            await _authService.signOut();
+            if (mounted) {
+              Navigator.popUntil(context, (route) => route.isFirst);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LoginScreen(() {
+                    Navigator.pushNamed(context, '/register');
+                  }),
+                ),
+              );
+            }
           },
           style: _buttonStyle(Colors.red),
           child: const Text(
