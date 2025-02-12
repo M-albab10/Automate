@@ -6,7 +6,7 @@ import 'services/auth_service.dart';
 final TextEditingController _emailController = TextEditingController();
 
 class Logining extends StatelessWidget {
-  Logining(this.register, {super.key});
+  const Logining(this.register, {super.key});
   final void Function() register;
 
   @override

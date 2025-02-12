@@ -298,10 +298,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                   final authService = AuthService();
                                   await authService
                                       .registerWithEmailAndPassword(
-                                    email: _emailController.text,
-                                    password: _passwordController.text,
-                                    username: _usernameController.text,
-                                  );
+                                          email: _emailController.text,
+                                          password: _passwordController.text,
+                                          username: _usernameController.text,
+                                          phoneNumber: _mobileController.text);
 
                                   Navigator.pushReplacement(
                                     context,
