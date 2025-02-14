@@ -1,14 +1,17 @@
 import 'package:automate/login_screen.dart';
+import 'package:automate/mechanic/mechanic_registration_screen.dart';
 import 'package:flutter/material.dart';
+import 'profile_screen.dart';
+import '../services/auth_service.dart';
 
-class MechanicRegisterScreen extends StatelessWidget {
-  const MechanicRegisterScreen({super.key});
+class RegisterScreen extends StatelessWidget {
+  const RegisterScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        primaryColor: const Color.fromARGB(255, 41, 225, 139),
+        primaryColor: Colors.blue,
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.white,
         inputDecorationTheme: InputDecorationTheme(
@@ -36,45 +39,83 @@ class MechanicRegisterScreen extends StatelessWidget {
           hintStyle: TextStyle(color: Colors.grey.shade400),
         ),
       ),
-      home: const MechanicRegistrationScreen(),
+      home: const RegistrationScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class MechanicRegistrationScreen extends StatefulWidget {
-  const MechanicRegistrationScreen({super.key});
+class RegistrationScreen extends StatefulWidget {
+  const RegistrationScreen({super.key});
 
   @override
-  _MechanicRegistrationScreenState createState() =>
-      _MechanicRegistrationScreenState();
+  _RegistrationScreenState createState() => _RegistrationScreenState();
 }
 
-class _MechanicRegistrationScreenState
-    extends State<MechanicRegistrationScreen> {
+class _RegistrationScreenState extends State<RegistrationScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _agreedToTerms = false;
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
-
+  bool _isLoading = false;
   final _usernameController = TextEditingController();
-  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _mobileController = TextEditingController();
-  final _locationController = TextEditingController();
-  final _workshopController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
     _usernameController.dispose();
-    _nameController.dispose();
+    _emailController.dispose();
     _mobileController.dispose();
-    _locationController.dispose();
-    _workshopController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  void _performRegister() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      if (!_agreedToTerms) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please agree to the terms and conditions'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+      setState(() {
+        _isLoading = true;
+      });
+      try {
+        final authService = AuthService();
+        await authService.registerWithEmailAndPassword(
+            email: _emailController.text,
+            password: _passwordController.text,
+            username: _usernameController.text,
+            phoneNumber: _mobileController.text);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                const ProfileScreen(), // Remove authService parameter
+          ),
+        );
+      } catch (e) {
+        print(e.toString());
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -88,7 +129,7 @@ class _MechanicRegistrationScreenState
                 Container(
                   height: 240,
                   decoration: const BoxDecoration(
-                    color: Color.fromARGB(222, 183, 57, 3),
+                    color: Colors.blue,
                   ),
                 ),
                 Positioned(
@@ -99,7 +140,7 @@ class _MechanicRegistrationScreenState
                     width: 150,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withAlpha(25),
                     ),
                   ),
                 ),
@@ -111,7 +152,7 @@ class _MechanicRegistrationScreenState
                     width: 120,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withAlpha(25),
                     ),
                   ),
                 ),
@@ -176,7 +217,7 @@ class _MechanicRegistrationScreenState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Register as Mechanic',
+                      'Create your account',
                       style: TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
@@ -192,9 +233,10 @@ class _MechanicRegistrationScreenState
                     ),
                     const SizedBox(height: 16),
                     _buildFormField(
-                      controller: _nameController,
-                      label: 'Full Name',
-                      hintText: 'Enter your full name',
+                      controller: _emailController,
+                      label: 'Email',
+                      hintText: 'Enter Email',
+                      keyboardType: TextInputType.emailAddress,
                     ),
                     const SizedBox(height: 16),
                     _buildFormField(
@@ -202,18 +244,6 @@ class _MechanicRegistrationScreenState
                       label: 'Mobile number',
                       hintText: 'Enter number',
                       keyboardType: TextInputType.phone,
-                    ),
-                    const SizedBox(height: 16),
-                    _buildFormField(
-                      controller: _locationController,
-                      label: 'Location',
-                      hintText: 'Enter your location',
-                    ),
-                    const SizedBox(height: 16),
-                    _buildFormField(
-                      controller: _workshopController,
-                      label: 'Workshop Name',
-                      hintText: 'Enter workshop name',
                     ),
                     const SizedBox(height: 16),
                     _buildFormField(
@@ -295,24 +325,9 @@ class _MechanicRegistrationScreenState
                       children: [
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState?.validate() ?? false) {
-                                if (!_agreedToTerms) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                          'Please agree to the terms and conditions'),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
-                                  return;
-                                }
-                                // Handle mechanic registration
-                              }
-                            },
+                            onPressed: _performRegister,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  const Color.fromARGB(255, 208, 63, 2),
+                              backgroundColor: Colors.blue,
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
@@ -320,11 +335,52 @@ class _MechanicRegistrationScreenState
                               ),
                               elevation: 0,
                             ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white),
+                                    ),
+                                  )
+                                : const Text(
+                                    'Register',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => LoginScreen(() {
+                                    Navigator.pushNamed(context, '/register');
+                                  }),
+                                ),
+                              );
+                            },
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              side: BorderSide(color: Colors.grey.shade300),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                            ),
                             child: const Text(
-                              'Register as Mechanic',
+                              'Login',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
+                                color: Colors.black87,
                                 letterSpacing: 0.5,
                               ),
                             ),
@@ -339,9 +395,8 @@ class _MechanicRegistrationScreenState
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => LoginScreen(() {
-                                Navigator.pushNamed(context, '/register');
-                              }),
+                              builder: (context) =>
+                                  const MechanicRegistrationScreen(),
                             ),
                           );
                         },
@@ -350,7 +405,7 @@ class _MechanicRegistrationScreenState
                               vertical: 8, horizontal: 16),
                         ),
                         child: const Text(
-                          'Already have an account? Login',
+                          'Register as Mechanic ?',
                           style: TextStyle(
                             color: Colors.black87,
                             fontWeight: FontWeight.w500,
@@ -394,16 +449,64 @@ class _MechanicRegistrationScreenState
           obscureText: obscureText,
           keyboardType: keyboardType,
           style: const TextStyle(fontSize: 15),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return '$label is required';
+            }
+
+            // Email validation
+            if (label == 'Email') {
+              final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+              if (!emailRegex.hasMatch(value)) {
+                return 'Please enter a valid email address';
+              }
+            }
+
+            // Mobile number validation
+            if (label == 'Mobile number') {
+              final phoneRegex = RegExp(r'^\d{10}$');
+              if (!phoneRegex.hasMatch(value)) {
+                return 'Please enter a valid 10-digit phone number';
+              }
+            }
+
+            // Username validation
+            if (label == 'Username') {
+              if (value.length < 3) {
+                return 'Username must be at least 3 characters long';
+              }
+              if (value.length > 30) {
+                return 'Username must be less than 30 characters';
+              }
+            }
+
+            // Password validation
+            if (label == 'Password') {
+              if (value.length < 6) {
+                return 'Password must be at least 6 characters long';
+              }
+              if (!value.contains(RegExp(r'[A-Z]'))) {
+                return 'Password must contain at least one uppercase letter';
+              }
+              if (!value.contains(RegExp(r'[0-9]'))) {
+                return 'Password must contain at least one number';
+              }
+            }
+
+            // Confirm Password validation
+            if (label == 'Confirm Password') {
+              if (value != _passwordController.text) {
+                return 'Passwords do not match';
+              }
+            }
+
+            return null;
+          },
           decoration: InputDecoration(
             hintText: hintText,
             suffixIcon: suffixIcon,
+            errorMaxLines: 2, // Allow error text to wrap
           ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'This field is required';
-            }
-            return null;
-          },
         ),
       ],
     );

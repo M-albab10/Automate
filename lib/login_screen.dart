@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'register_screen.dart';
-import 'profile_screen.dart';
+import 'costumer/register_screen.dart';
+import 'costumer/profile_screen.dart';
 import 'services/auth_service.dart';
 
 final TextEditingController _emailController = TextEditingController();
@@ -103,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
               borderRadius: BorderRadius.circular(30),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
+                  color: Colors.black.withAlpha(14),
                   blurRadius: 24,
                   offset: const Offset(0, 8),
                 ),

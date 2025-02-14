@@ -2,10 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'navbar.dart';
-import 'app_bar.dart';
+import '../bars/navbar.dart';
+import '../bars/app_bar.dart';
 import 'add_car_screen.dart';
-import 'services/car_service.dart';
+import '../services/car_service.dart';
 
 class CarScreen extends StatefulWidget {
   const CarScreen({super.key});
@@ -26,7 +26,7 @@ class _CarScreenState extends State<CarScreen> {
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
-              child: Text('Error: ${snapshot.error}'),
+              child: Text('Error here?: ${snapshot.error}'),
             );
           }
 

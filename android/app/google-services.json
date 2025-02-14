@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "633141590325",
-    "project_id": "automate-dbbc5",
-    "storage_bucket": "automate-dbbc5.firebasestorage.app"
+    "project_number": "332068776629",
+    "project_id": "automate-c7874",
+    "storage_bucket": "automate-c7874.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:633141590325:android:5626fa8b7043f4ce1a347c",
+        "mobilesdk_app_id": "1:332068776629:android:287da91ee3fb171083acfc",
         "android_client_info": {
           "package_name": "com.example.automate"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBtztA8Comt2vz2r8XSF4HZrQCDaDXJttM"
+          "current_key": "AIzaSyCTqduvQzEkn0aPQpcyzo46v-zNbdg594I"
         }
       ],
       "services": {

@@ -1,8 +1,8 @@
-import 'package:automate/cars_screen.dart';
-import 'package:automate/chat_screen.dart';
-import 'package:automate/order_screen.dart';
+import 'package:automate/costumer/cars_screen.dart';
+import 'package:automate/costumer/chat_screen.dart';
+import 'package:automate/costumer/order_screen.dart';
 import 'package:flutter/material.dart';
-import 'profile_screen.dart';
+import '../costumer/profile_screen.dart';
 
 // In your main.dart or wherever you define your initial route
 
@@ -51,7 +51,7 @@ class CustomBottomNavBar extends StatelessWidget {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withAlpha(25),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),

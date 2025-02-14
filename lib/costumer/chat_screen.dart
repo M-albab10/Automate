@@ -1,6 +1,6 @@
-import 'package:automate/app_bar.dart';
+import 'package:automate/bars/app_bar.dart';
 import 'package:flutter/material.dart';
-import 'navbar.dart';
+import '../bars/navbar.dart';
 
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});

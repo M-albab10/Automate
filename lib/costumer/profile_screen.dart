@@ -1,8 +1,8 @@
-import 'package:automate/app_bar.dart';
+import 'package:automate/bars/app_bar.dart';
 import 'package:flutter/material.dart';
-import 'login_screen.dart';
-import 'navbar.dart';
-import 'services/auth_service.dart';
+import '../login_screen.dart';
+import '../bars/navbar.dart';
+import '../services/auth_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -118,7 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.withAlpha(75),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
                     ),
@@ -146,7 +146,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withAlpha(25),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
@@ -201,7 +201,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.blue.withOpacity(0.1),
+              color: Colors.blue.withAlpha(25),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(icon, color: Colors.blue, size: 20),
@@ -295,7 +295,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       borderRadius: BorderRadius.circular(15),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.05),
+          color: Colors.black.withAlpha(13),
           blurRadius: 10,
           offset: const Offset(0, 5),
         ),

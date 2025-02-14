@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'profile_screen.dart';
-import 'navbar.dart';
-import 'chat_screen.dart';
-import 'cars_screen.dart';
-import 'order_screen.dart';
+import 'costumer/profile_screen.dart';
+import 'bars/navbar.dart';
+import 'costumer/chat_screen.dart';
+import 'costumer/cars_screen.dart';
+import 'costumer/order_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
