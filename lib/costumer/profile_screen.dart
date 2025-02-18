@@ -257,9 +257,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => LoginScreen(() {
-                    Navigator.pushNamed(context, '/register');
-                  }),
+                  builder: (context) => const LoginScreen(),
                 ),
               );
             }

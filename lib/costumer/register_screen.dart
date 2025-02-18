@@ -362,9 +362,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => LoginScreen(() {
-                                    Navigator.pushNamed(context, '/register');
-                                  }),
+                                  builder: (context) => const LoginScreen(),
                                 ),
                               );
                             },

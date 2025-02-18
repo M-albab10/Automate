@@ -21,7 +21,7 @@ class AuthService {
     }
   }
 
-  // Registration method
+  // Registration method for costumer 
   Future<UserCredential> registerWithEmailAndPassword({
     required String email,
     required String password,
@@ -49,6 +49,41 @@ class AuthService {
       throw _handleAuthException(e);
     }
   }
+
+  Future<UserCredential> mechanicRegister({
+    required String username,
+    required String fullName,
+    required String email,
+    required String phoneNumber,
+    required String location,
+    required String workshopName,
+    required String password,
+  }) async {
+    try {
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Add user details to Firestore
+      await _firestore.collection('Mechanic').doc(userCredential.user!.uid).set({
+        'uid': userCredential.user!.uid,
+        'username': username,
+        'fullName':fullName,
+        'email': email,
+        'phoneNumber': phoneNumber,
+        'location':location,
+        'workshopName':workshopName,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      return userCredential;
+    } on FirebaseAuthException catch (e) {
+      throw _handleAuthException(e);
+    }
+  }
+
 
   // Get current user
   User? getCurrentUser() {

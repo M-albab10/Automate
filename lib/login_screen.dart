@@ -6,8 +6,9 @@ import 'services/auth_service.dart';
 final TextEditingController _emailController = TextEditingController();
 
 class Logining extends StatelessWidget {
-  Logining(this.register, {super.key});
-  final void Function() register;
+  // const Logining(this.register, {super.key});
+  // final void Function() register;
+  const Logining({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,15 +28,16 @@ class Logining extends StatelessWidget {
           ),
         ),
       ),
-      home: LoginScreen(register),
+      // home: LoginScreen(register),
+      home: const LoginScreen(),
     );
   }
 }
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen(this.register, {super.key});
-  final void Function() register;
-
+  // const LoginScreen(this.register, {super.key});
+  // final void Function() register;
+  const LoginScreen({super.key});
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }

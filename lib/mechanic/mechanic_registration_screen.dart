@@ -1,5 +1,6 @@
-import 'package:automate/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:automate/login_screen.dart';
+import 'package:automate/services/auth_service.dart';
 
 class MechanicRegisterScreen extends StatelessWidget {
   const MechanicRegisterScreen({super.key});
@@ -56,9 +57,10 @@ class _MechanicRegistrationScreenState
   bool _agreedToTerms = false;
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
-
+  bool _isLoading = false;
   final _usernameController = TextEditingController();
   final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _mobileController = TextEditingController();
   final _locationController = TextEditingController();
   final _workshopController = TextEditingController();
@@ -69,12 +71,61 @@ class _MechanicRegistrationScreenState
   void dispose() {
     _usernameController.dispose();
     _nameController.dispose();
+    _emailController.dispose();
     _mobileController.dispose();
     _locationController.dispose();
     _workshopController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  void _performRegister() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      if (!_agreedToTerms) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please agree to the terms and conditions'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+      setState(() {
+        _isLoading = true;
+      });
+      try {
+        final authService = AuthService();
+        await authService.mechanicRegister(
+          email: _emailController.text,
+          password: _passwordController.text,
+          username: _usernameController.text,
+          phoneNumber: _mobileController.text,
+          fullName: _nameController.text,
+          location: _locationController.text,
+          workshopName: _workshopController.text,
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                const LoginScreen(), // Remove authService parameter
+          ),
+        );
+      } catch (e) {
+        print(e.toString());
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -198,22 +249,28 @@ class _MechanicRegistrationScreenState
                     ),
                     const SizedBox(height: 16),
                     _buildFormField(
+                      controller: _emailController,
+                      label: 'Email',
+                      hintText: 'Ex: example@example.com',
+                    ),
+                    const SizedBox(height: 16),
+                    _buildFormField(
                       controller: _mobileController,
                       label: 'Mobile number',
-                      hintText: 'Enter number',
+                      hintText: 'Ex: 05XXXXXXXX',
                       keyboardType: TextInputType.phone,
                     ),
                     const SizedBox(height: 16),
                     _buildFormField(
                       controller: _locationController,
                       label: 'Location',
-                      hintText: 'Enter your location',
+                      hintText: 'Ex: Riyadh, king fahad district',
                     ),
                     const SizedBox(height: 16),
                     _buildFormField(
                       controller: _workshopController,
                       label: 'Workshop Name',
-                      hintText: 'Enter workshop name',
+                      hintText: 'Ex: khalid\'s warsha',
                     ),
                     const SizedBox(height: 16),
                     _buildFormField(
@@ -296,19 +353,7 @@ class _MechanicRegistrationScreenState
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
-                              if (_formKey.currentState?.validate() ?? false) {
-                                if (!_agreedToTerms) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                          'Please agree to the terms and conditions'),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
-                                  return;
-                                }
-                                // Handle mechanic registration
-                              }
+                              _performRegister();
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor:
@@ -320,14 +365,24 @@ class _MechanicRegistrationScreenState
                               ),
                               elevation: 0,
                             ),
-                            child: const Text(
-                              'Register as Mechanic',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white),
+                                    ),
+                                  )
+                                : const Text(
+                                    'Register as Mechanic',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
                           ),
                         ),
                       ],
@@ -339,9 +394,7 @@ class _MechanicRegistrationScreenState
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => LoginScreen(() {
-                                Navigator.pushNamed(context, '/register');
-                              }),
+                              builder: (context) => const LoginScreen(),
                             ),
                           );
                         },

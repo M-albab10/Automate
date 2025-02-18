@@ -14,9 +14,9 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  void _navigateToRegister(BuildContext context) {
-    Navigator.pushNamed(context, '/register');
-  }
+  // void _navigateToRegister(BuildContext context) {
+  //   Navigator.pushNamed(context, '/register');
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       ),
       home: const RegisterScreen(),
       routes: {
-        '/login': (context) => LoginScreen(() => _navigateToRegister(context)),
+        '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/mechanic_register': (context) => const MechanicRegistrationScreen(),
         'profile_screen': (context) => const ProfileScreen(),
