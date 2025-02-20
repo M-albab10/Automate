@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:automate/login_screen.dart';
 import 'package:automate/services/auth_service.dart';
+import 'package:automate/mechanic/mechanic_profile_screen.dart';
 
 class MechanicRegisterScreen extends StatelessWidget {
   const MechanicRegisterScreen({super.key});
@@ -81,52 +82,62 @@ class _MechanicRegistrationScreenState
   }
 
   void _performRegister() async {
-    if (_formKey.currentState?.validate() ?? false) {
-      if (!_agreedToTerms) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please agree to the terms and conditions'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-      setState(() {
-        _isLoading = true;
-      });
-      try {
-        final authService = AuthService();
-        await authService.mechanicRegister(
-          email: _emailController.text,
-          password: _passwordController.text,
-          username: _usernameController.text,
-          phoneNumber: _mobileController.text,
-          fullName: _nameController.text,
-          location: _locationController.text,
-          workshopName: _workshopController.text,
-        );
+  if (_formKey.currentState?.validate() ?? false) {
+    if (!_agreedToTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please agree to the terms and conditions'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final authService = AuthService();
+      await authService.mechanicRegister(
+        email: _emailController.text,
+        password: _passwordController.text,
+        username: _usernameController.text,
+        phoneNumber: _mobileController.text,
+        fullName: _nameController.text,
+        location: _locationController.text,
+        workshopName: _workshopController.text,
+      );
+
+      // Navigate to the modified Mechanic Profile Screen
+      if (mounted) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                const LoginScreen(), // Remove authService parameter
+            builder: (context) => const MechanicProfileScreen(),
           ),
         );
-      } catch (e) {
-        print(e.toString());
+      }
+    } catch (e) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(e.toString()),
+            content: Text('Registration failed: ${e.toString()}'),
             backgroundColor: Colors.red,
           ),
         );
-      } finally {
+      }
+    } finally {
+      if (mounted) {
         setState(() {
           _isLoading = false;
         });
       }
     }
   }
+}
+
+
 
   @override
   Widget build(BuildContext context) {

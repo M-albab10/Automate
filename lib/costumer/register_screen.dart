@@ -405,7 +405,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         child: const Text(
                           'Register as Mechanic ?',
                           style: TextStyle(
-                            color: Colors.black87,
+                            color: Colors.blue,
                             fontWeight: FontWeight.w500,
                             fontSize: 15,
                           ),
