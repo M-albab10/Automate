@@ -1,100 +1,112 @@
 import 'package:automate/bars/app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../bars/navbar.dart';
+import '../costumer/maintenance_request_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class OrdersScreen extends StatelessWidget {
+class OrdersScreen extends StatefulWidget {
   const OrdersScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final List<Map<String, String>> orders = [
-      {
-        'name': 'Muhammad Khan',
-        'status': 'Pending',
-        'car': 'Fortuner',
-        'date': '10/23/2024',
-        'image': 'assets/images/car1.png'
-      },
-      {
-        'name': 'Ahmad Khan',
-        'status': 'Working on it',
-        'car': 'Syeera',
-        'date': '10/11/2024',
-        'image': 'assets/images/car2.png'
-      },
-      {
-        'name': 'Muhammad Khan',
-        'status': 'Fixed',
-        'car': 'Centra',
-        'date': '07/11/2024',
-        'image': 'assets/images/car3.png'
-      },
-    ];
+  _OrdersScreenState createState() => _OrdersScreenState();
+}
 
+class _OrdersScreenState extends State<OrdersScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<void> _deleteRequest(String requestId) async {
+    await _firestore.collection('maintenance_requests').doc(requestId).delete();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: const AppBarWidget(pageName: 'Maintenance'),
-      body: ListView.builder(
-        itemCount: orders.length,
-        itemBuilder: (context, index) {
-          final order = orders[index];
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: ListTile(
-              leading: CircleAvatar(
-                radius: 25,
-                backgroundImage: AssetImage(order['image']!),
-              ),
-              title: Text(
-                order['name']!,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    order['status']!,
-                    style: TextStyle(
-                      color: order['status'] == 'Pending'
-                          ? Colors.blue
-                          : Colors.green,
-                    ),
+      body: StreamBuilder(
+        stream: _firestore
+            .collection('maintenance_requests')
+            .where('userId', isEqualTo: _auth.currentUser?.uid)
+            .snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text("No maintenance requests found."));
+          }
+
+          var requests = snapshot.data!.docs;
+
+          return ListView.builder(
+            itemCount: requests.length,
+            itemBuilder: (context, index) {
+              var request = requests[index];
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: ListTile(
+                  leading: const CircleAvatar(
+                    radius: 25,
+                    backgroundColor: Colors.grey,
+                    child: Icon(Icons.car_repair, color: Colors.white),
                   ),
-                  Text(order['car']!),
-                ],
-              ),
-              trailing: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(order['date']!),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () {
-                      // Action for delete
-                    },
+                  title: Text(
+                    "Request ID: ${request.id}",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                ],
-              ),
-            ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        request['status'] ?? 'Pending',
+                        style: TextStyle(
+                          color: request['status'] == 'Pending'
+                              ? Colors.blue
+                              : request['status'] == 'Fixed'
+                                  ? Colors.green
+                                  : Colors.orange,
+                        ),
+                      ),
+                      Text("Car: ${request['car']}"),
+                      Text("City: ${request['city']}"),
+                    ],
+                  ),
+                  trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () {
+                          _deleteRequest(request.id);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          // Action to add new request
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const MaintenanceRequestScreen(),
+            ),
+          );
         },
         icon: const Icon(Icons.add),
         label: const Text('Request'),
       ),
       bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: 1, // Correct index for Orders tab
-        onTap: (index) {
-          if (index == 1) return; // Prevent navigation if already on Orders
-
-          // Use pushReplacement only if not on the current tab
-        },
+        currentIndex: 1, // Orders tab index
+        onTap: (index) {},
       ),
     );
   }
