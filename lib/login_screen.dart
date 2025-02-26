@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import 'package:automate/mechanic/mechanic_profile_screen.dart';
 import 'costumer/register_screen.dart';
 import 'costumer/profile_screen.dart';
 import 'services/auth_service.dart';
@@ -35,11 +37,10 @@ class Logining extends StatelessWidget {
 }
 
 class LoginScreen extends StatefulWidget {
-  // const LoginScreen(this.register, {super.key});
-  // final void Function() register;
+
   const LoginScreen({super.key});
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -48,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   bool _passwordVisible = false;
   bool _keepMeLoggedIn = false;
-
+  String _userType = 'customer';
   void _togglePasswordVisibility() {
     setState(() {
       _passwordVisible = !_passwordVisible;
@@ -66,16 +67,22 @@ class _LoginScreenState extends State<LoginScreen> {
         await authService.signInWithEmailAndPassword(
           email: _emailController.text,
           password: _passwordController.text,
+          userType: _userType,
         );
 
+        if (!mounted) return;
+
+        // If we get here, authentication and user type verification succeeded
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                const ProfileScreen(), // Remove authService parameter
+            builder: (context) => _userType == 'customer'
+                ? const ProfileScreen()
+                : const MechanicProfileScreen(),
           ),
         );
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.toString()),
@@ -83,9 +90,11 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         );
       } finally {
-        setState(() {
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
     }
   }
@@ -170,6 +179,70 @@ class _LoginScreenState extends State<LoginScreen> {
                         validator: (value) => value?.isEmpty == true
                             ? 'Please enter your password'
                             : null,
+                      ), //here
+                      const SizedBox(height: 16),
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () =>
+                                    setState(() => _userType = 'customer'),
+                                child: Container(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 12),
+                                  decoration: BoxDecoration(
+                                    color: _userType == 'customer'
+                                        ? Colors.blue
+                                        : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  child: Text(
+                                    'Customer',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: _userType == 'customer'
+                                          ? Colors.white
+                                          : Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () =>
+                                    setState(() => _userType = 'mechanic'),
+                                child: Container(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 12),
+                                  decoration: BoxDecoration(
+                                    color: _userType == 'mechanic'
+                                        ? Colors.blue
+                                        : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  child: Text(
+                                    'Mechanic',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: _userType == 'mechanic'
+                                          ? Colors.white
+                                          : Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Align(

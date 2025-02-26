@@ -5,21 +5,36 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Sign in method
   Future<UserCredential> signInWithEmailAndPassword({
     required String email,
     required String password,
+    required String userType,
   }) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+
+      // Check if user exists in the selected collection
+      final collection = userType == 'mechanic' ? 'Mechanic' : 'users';
+      final userDoc = await _firestore
+          .collection(collection)
+          .doc(userCredential.user!.uid)
+          .get();
+
+      // If user doesn't exist in the selected collection, sign out and throw error
+      if (!userDoc.exists) {
+        await _auth.signOut();
+        throw 'Please select correct user type';
+      }
+
       return userCredential;
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
     }
   }
+
 
   // Registration method for costumer 
   Future<UserCredential> registerWithEmailAndPassword({

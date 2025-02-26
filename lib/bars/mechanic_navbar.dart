@@ -15,19 +15,22 @@ class MechanicBottomNavBar extends StatelessWidget {
 
   static final List<Map<String, dynamic>> _navigationItems = [
     {
-      'screen': (){},//const MechanicJobsScreen(),
+      'screen': const MechanicJobsScreen(),
       'icon': Icons.work,
       'label': 'Jobs',
+      'activeColor': Colors.blue,
     },
     {
-      'screen': (){},//const MechanicChatScreen(),
+      'screen': const MechanicChatScreen(),
       'icon': Icons.chat_bubble_outline,
       'label': 'Chat',
+      'activeColor': Colors.blue,
     },
     {
       'screen': const MechanicProfileScreen(),
       'icon': Icons.person,
       'label': 'Profile',
+      'activeColor': Colors.blue,
     },
   ];
 
@@ -76,8 +79,8 @@ class _MechanicHomeScreenState extends State<MechanicHomeScreen> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    //const MechanicJobsScreen(),
-    //const MechanicChatScreen(),
+    const MechanicJobsScreen(),
+    const MechanicChatScreen(),
     const MechanicProfileScreen(),
   ];
 

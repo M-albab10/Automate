@@ -1,8 +1,10 @@
-import 'package:automate/bars/app_bar.dart';
 import 'package:flutter/material.dart';
+
+import 'package:automate/bars/app_bar.dart';
 import '../login_screen.dart';
 import '../bars/navbar.dart';
 import '../services/auth_service.dart';
+import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -236,9 +238,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Column(
       children: [
         ElevatedButton(
-          onPressed: () {
-            // TODO: Implement edit profile
-          },
+          onPressed: () async {
+  bool? updated = await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => EditProfileScreen(userData: userData!),
+    ),
+  );
+
+  if (updated == true) {
+    _loadUserData(); // Reload profile data after editing
+  }
+},
           style: _buttonStyle(Colors.blue),
           child: const Text(
             'Edit Profile',

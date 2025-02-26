@@ -104,7 +104,7 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          CircleAvatar(
+          const CircleAvatar(
             radius: 60,
             backgroundImage: AssetImage('assets/images/default_avatar.png'),
           ),

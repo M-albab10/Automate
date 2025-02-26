@@ -25,7 +25,14 @@ class MyApp extends StatelessWidget {
         primaryColor: Colors.blue,
         useMaterial3: true,
       ),
-      home: const RegisterScreen(),
+      home: const LoginScreen(),
+      // home: StreamBuilder(stream: FirebaseAuth.instance.authStateChanges(), builder: (ctx,snapshot){
+      //   if(snapshot.hasData){
+      //     return const ProfileScreen();
+      //   }
+
+      //   return const LoginScreen();
+      // }),
       routes: {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),

@@ -1,6 +1,8 @@
-import 'package:automate/bars/app_bar.dart';
 import 'package:flutter/material.dart';
+
+import 'package:automate/bars/app_bar.dart';
 import '../bars/navbar.dart';
+import 'Direct_Chat_Screen.dart';
 
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
@@ -69,6 +71,15 @@ class ChatScreen extends StatelessWidget {
                   trailing: Text(chat['date']!),
                   onTap: () {
                     // Action to open chat
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DirectChatScreen(
+                          userName: chat['name'] ?? 'Unknown',
+                          userId: chat['name'] ?? '', // Using name as ID
+                        ),
+                      ),
+                    );
                   },
                 );
               },
@@ -78,9 +89,7 @@ class ChatScreen extends StatelessWidget {
       ),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: 2,
-        onTap: (index) {
-          // Handle navigation tap
-        },
+        onTap: (index) {},
       ),
     );
   }
