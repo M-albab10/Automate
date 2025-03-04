@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "109106935558",
+    "project_id": "automate-2491e",
+    "storage_bucket": "automate-2491e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:109106935558:android:3d8198200e278f22c09087",
+        "android_client_info": {
+          "package_name": "com.example.automate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkS9hx5C5VSkAM-9rRaWEorv8fyQFsHFw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:109106935558:android:9ea8aae8066cd820c09087",
+        "android_client_info": {
+          "package_name": "com.example.automate12"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkS9hx5C5VSkAM-9rRaWEorv8fyQFsHFw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
