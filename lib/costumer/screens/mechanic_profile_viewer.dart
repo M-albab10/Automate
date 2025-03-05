@@ -196,12 +196,12 @@ class _MechanicProfileViewerState extends State<MechanicProfileViewer> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return Scaffold(
+      return const Scaffold(
         appBar: AppBarWidget(
           pageName: 'Mechanic Profile',
           implyLeading: true,
         ),
-        body: const Center(child: CircularProgressIndicator()),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
@@ -212,7 +212,7 @@ class _MechanicProfileViewerState extends State<MechanicProfileViewer> {
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      appBar: AppBarWidget(
+      appBar: const AppBarWidget(
         pageName: 'Mechanic Profile',
         implyLeading: true,
       ),

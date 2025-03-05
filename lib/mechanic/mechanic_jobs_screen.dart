@@ -6,7 +6,6 @@ import 'package:automate/bars/app_bar.dart';
 import '../bars/mechanic_navbar.dart';
 import './widgets/job_card.dart';
 import './widgets/search_filter.dart';
-import './utils/constants.dart';
 import './dialogs/jop_details_dialogs.dart';
 
 class MechanicJobsScreen extends StatefulWidget {

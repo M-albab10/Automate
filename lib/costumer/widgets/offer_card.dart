@@ -69,9 +69,9 @@ class OfferCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            backgroundColor: const Color.fromARGB(255, 208, 63, 2),
-            child: const Icon(Icons.person, color: Colors.white),
+          const CircleAvatar(
+            backgroundColor: Color.fromARGB(255, 208, 63, 2),
+            child: Icon(Icons.person, color: Colors.white),
           ),
           const SizedBox(width: 12),
           Expanded(

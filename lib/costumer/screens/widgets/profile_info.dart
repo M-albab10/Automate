@@ -69,8 +69,8 @@ class ProfileInfo extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.build_circle,
-                  color: const Color.fromARGB(255, 208, 63, 2)),
+              const Icon(Icons.build_circle,
+                  color: Color.fromARGB(255, 208, 63, 2)),
               const SizedBox(width: 16),
               Text('Specialties',
                   style: TextStyle(color: Colors.grey[600], fontSize: 12)),
@@ -103,8 +103,8 @@ class ProfileInfo extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.info_outline,
-                  color: const Color.fromARGB(255, 208, 63, 2)),
+              const Icon(Icons.info_outline,
+                  color: Color.fromARGB(255, 208, 63, 2)),
               const SizedBox(width: 16),
               Text('About',
                   style: TextStyle(color: Colors.grey[600], fontSize: 12)),

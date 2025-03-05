@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../bars/app_bar.dart';
 import '../bars/navbar.dart';
-import 'screens/mechanic_profile_viewer.dart';
-import 'models/offer.dart';
 import 'services/offer_service.dart';
 import 'widgets/request_details_card.dart';
 import 'widgets/offers_list.dart';
