@@ -7,6 +7,7 @@ import '../bars/mechanic_navbar.dart';
 import './widgets/job_card.dart';
 import './widgets/search_filter.dart';
 import './dialogs/jop_details_dialogs.dart';
+// import 'package:diacritic/diacritic.dart';
 
 class MechanicJobsScreen extends StatefulWidget {
   const MechanicJobsScreen({super.key});
@@ -48,50 +49,68 @@ class _MechanicJobsScreenState extends State<MechanicJobsScreen> {
     );
   }
 
-  Widget _buildJobsList() {
+    Widget _buildJobsList() {
     final currentUserId = _auth.currentUser?.uid ?? '';
 
-    return StreamBuilder<QuerySnapshot>(
-      stream: _firestore.collection('maintenance_requests').snapshots(),
-      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+    return FutureBuilder<DocumentSnapshot>(
+      future: _firestore.collection('Mechanic').doc(currentUserId).get(),
+      builder: (context, mechanicSnapshot) {
+        if (mechanicSnapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return _buildEmptyState('No maintenance requests available');
+        if (!mechanicSnapshot.hasData || !mechanicSnapshot.data!.exists) {
+          return _buildEmptyState('Mechanic profile not found');
         }
 
-        // First filter the requests
-        var initialFiltered = _filterRequests(snapshot.data!.docs);
+        final mechanicData = mechanicSnapshot.data!.data() as Map<String, dynamic>;
+        final mechanicCity = mechanicData['location'] ?? '';
 
-        // For in-progress requests, we need to check if this mechanic made an offer
-        return FutureBuilder<List<DocumentSnapshot>>(
-            future: _filterInProgressRequests(initialFiltered),
-            builder: (context, asyncSnapshot) {
-              if (asyncSnapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
+        return StreamBuilder<QuerySnapshot>(
+          stream: _firestore.collection('maintenance_requests').snapshots(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-              final filteredRequests = asyncSnapshot.data ?? [];
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return _buildEmptyState('No maintenance requests available');
+            }
 
-              if (filteredRequests.isEmpty) {
-                return _buildEmptyState('No requests match your filters');
-              }
+            // First filter the requests based on mechanic's city
+            var initialFiltered = _filterRequests(snapshot.data!.docs, mechanicCity);
 
-              return ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: filteredRequests.length,
-                itemBuilder: (context, index) => JobCardWidget(
-                  request: filteredRequests[index],
-                  onTap: () => showJobDetailsDialog(
-                      context, filteredRequests[index], _auth, _firestore),
-                ),
-              );
-            });
+            return FutureBuilder<List<DocumentSnapshot>>(
+              future: _filterInProgressRequests(initialFiltered),
+              builder: (context, asyncSnapshot) {
+                if (asyncSnapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                final filteredRequests = asyncSnapshot.data ?? [];
+
+                if (filteredRequests.isEmpty) {
+                  return _buildEmptyState('No requests available in your city');
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: filteredRequests.length,
+                  itemBuilder: (context, index) => JobCardWidget(
+                    request: filteredRequests[index],
+                    onTap: () => showJobDetailsDialog(
+                        context, filteredRequests[index], _auth, _firestore),
+                  ),
+                );
+              },
+            );
+          },
+        );
       },
     );
   }
+
+
 
   Future<List<DocumentSnapshot>> _filterInProgressRequests(
       List<DocumentSnapshot> requests) async {
@@ -124,8 +143,22 @@ class _MechanicJobsScreenState extends State<MechanicJobsScreen> {
     return result;
   }
 
-  List<DocumentSnapshot> _filterRequests(List<DocumentSnapshot> requests) {
+//   //there is a problem in comparing city names
+//   String normalizeCity(String city) {
+//   return removeDiacritics(city.trim().toLowerCase());
+// }
+
+
+
+    List<DocumentSnapshot> _filterRequests(List<DocumentSnapshot> requests, String mechanicCity) {
     return requests.where((doc) {
+      final requestCity = (doc['city'] ?? '').toLowerCase();
+      
+      // Filter by mechanic's city
+      if (requestCity != mechanicCity.toLowerCase()) {
+        return false;
+      }
+
       // Filter by status if not 'All'
       if (_selectedFilter != 'All' && doc['status'] != _selectedFilter) {
         return false;
@@ -146,6 +179,8 @@ class _MechanicJobsScreenState extends State<MechanicJobsScreen> {
       return true;
     }).toList();
   }
+
+
 
   Widget _buildEmptyState(String message) {
     return Center(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../login_screen.dart';
 import '../bars/mechanic_navbar.dart';
 import '../services/auth_service.dart';
+import 'edit_mechanic_profile_screen.dart'; // Import the new edit screen
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -168,19 +169,28 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
     return Column(
       children: [
         ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => EditMechanicProfileScreen(mechanicData: mechanicData!),
+              ),
+            ).then((_) => _loadMechanicData()); // Reload profile after editing
+          },
+          style: _buttonStyle(Colors.blue),
+          child: const Text('Edit Profile', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        ),
+        const SizedBox(height: 10),
+        ElevatedButton(
           onPressed: () async {
             await _authService.signOut();
             if (mounted) {
               Navigator.popUntil(context, (route) => route.isFirst);
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginScreen()),
-              );
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
             }
           },
           style: _buttonStyle(Colors.red),
-          child: const Text('Logout',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          child: const Text('Logout', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
         ),
       ],
     );

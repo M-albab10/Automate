@@ -162,12 +162,16 @@
 //     );
 //   }
 // }
+
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:image_picker/image_picker.dart';
 import '../costumer/order_screen.dart';
 import 'dart:io';
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:convert';
 
 class MaintenanceRequestScreen extends StatefulWidget {
   const MaintenanceRequestScreen({super.key});
@@ -183,11 +187,13 @@ class _MaintenanceRequestScreenState extends State<MaintenanceRequestScreen> {
   String? selectedCity;
   File? _image;
   bool _isLoading = false;
+  List<String> cities = [];
 
   @override
   void initState() {
     super.initState();
     _fetchUserCars();
+    _loadCities();
   }
 
   List<String> userCars = [];
@@ -215,6 +221,15 @@ class _MaintenanceRequestScreenState extends State<MaintenanceRequestScreen> {
   //     });
   //   }
   // }
+
+  Future<void> _loadCities() async {
+    final String jsonString = await rootBundle.loadString('assets/saudi_cities.json');
+    final List<dynamic> jsonList = json.decode(jsonString);
+    setState(() {
+      cities = jsonList.map((city) => city.toString()).toList();
+    });
+  }
+
 
   Future<void> _submitRequest() async {
     if (_formKey.currentState?.validate() ?? false) {
@@ -296,7 +311,7 @@ class _MaintenanceRequestScreenState extends State<MaintenanceRequestScreen> {
                 const Text("City:"),
                 DropdownButtonFormField<String>(
                   value: selectedCity,
-                  items: ["Riyadh", "Jeddah", "Dammam"].map((city) => DropdownMenuItem(value: city, child: Text(city))).toList(),
+                  items: cities.map((city) => DropdownMenuItem(value: city, child: Text(city))).toList(),
                   onChanged: (value) => setState(() => selectedCity = value),
                   decoration: const InputDecoration(border: OutlineInputBorder()),
                   validator: (value) => value == null ? "Please select a city" : null,

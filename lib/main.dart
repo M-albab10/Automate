@@ -4,7 +4,7 @@ import 'login_screen.dart';
 import 'costumer/register_screen.dart';
 import 'mechanic/mechanic_registration_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'secrets/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

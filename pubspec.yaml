@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  diacritic: ^0.1.3
   flutter:
     sdk: flutter
 
@@ -64,6 +65,7 @@ flutter:
     - assets/images/logo.png
     - assets/images/default_avatar.png
     - assets/images/car.png
+    - assets/saudi_cities.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

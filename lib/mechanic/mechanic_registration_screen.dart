@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:automate/login_screen.dart';
 import 'package:automate/services/auth_service.dart';
 import 'package:automate/mechanic/mechanic_profile_screen.dart';
+import 'package:flutter/services.dart';
 
 class MechanicRegisterScreen extends StatelessWidget {
   const MechanicRegisterScreen({super.key});
@@ -59,22 +61,39 @@ class _MechanicRegistrationScreenState
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   bool _isLoading = false;
+  String? selectedCity;
+  List<String> cities = [];
+
   final _usernameController = TextEditingController();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _mobileController = TextEditingController();
-  final _locationController = TextEditingController();
+  //final _locationController = TextEditingController();
   final _workshopController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    _loadCities();
+  }
+
+  Future<void> _loadCities() async {
+    String data = await rootBundle.loadString('assets/saudi_cities.json');
+    List<dynamic> jsonResult = json.decode(data);
+    setState(() {
+      cities = jsonResult.cast<String>();
+    });
+  }
+  
   @override
   void dispose() {
     _usernameController.dispose();
     _nameController.dispose();
     _emailController.dispose();
     _mobileController.dispose();
-    _locationController.dispose();
+    //_locationController.dispose();
     _workshopController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -105,7 +124,8 @@ class _MechanicRegistrationScreenState
         username: _usernameController.text,
         phoneNumber: _mobileController.text,
         fullName: _nameController.text,
-        location: _locationController.text,
+        //location: _locationController.text,
+        location: selectedCity ?? '',
         workshopName: _workshopController.text,
       );
 
@@ -272,11 +292,27 @@ class _MechanicRegistrationScreenState
                       keyboardType: TextInputType.phone,
                     ),
                     const SizedBox(height: 16),
-                    _buildFormField(
-                      controller: _locationController,
-                      label: 'Location',
-                      hintText: 'Ex: Riyadh, king fahad district',
-                    ),
+                    DropdownButtonFormField<String>(
+                  value: selectedCity,
+                  items: cities.map((city) {
+                    return DropdownMenuItem(value: city, child: Text(city));
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      selectedCity = value;
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    labelText: "Select City",
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) => value == null ? "Please select a city" : null,
+                ),
+                    // _buildFormField(
+                    //   controller: _locationController,
+                    //   label: 'Location',
+                    //   hintText: 'Ex: Riyadh, king fahad district',
+                    // ),
                     const SizedBox(height: 16),
                     _buildFormField(
                       controller: _workshopController,
