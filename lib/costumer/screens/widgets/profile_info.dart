@@ -84,7 +84,7 @@ class ProfileInfo extends StatelessWidget {
                 .map((specialty) => Chip(
                       label: Text(specialty),
                       backgroundColor: const Color.fromARGB(255, 208, 63, 2)
-                          .withOpacity(0.1),
+                          .withAlpha(25),
                       labelStyle: const TextStyle(
                           color: Color.fromARGB(255, 208, 63, 2)),
                     ))

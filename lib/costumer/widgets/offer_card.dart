@@ -23,7 +23,7 @@ class OfferCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withAlpha(12),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),
@@ -61,7 +61,7 @@ class OfferCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 208, 63, 2).withOpacity(0.1),
+        color: const Color.fromARGB(255, 208, 63, 2).withAlpha(25),
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(12),
           topRight: Radius.circular(12),
@@ -156,7 +156,7 @@ class OfferCard extends StatelessWidget {
             vertical: 4,
           ),
           decoration: BoxDecoration(
-            color: statusColor.withOpacity(0.1),
+            color: statusColor.withAlpha(25),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
@@ -176,10 +176,10 @@ class OfferCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 208, 63, 2).withOpacity(0.08),
+        color: const Color.fromARGB(255, 208, 63, 2).withAlpha(17),
         borderRadius: BorderRadius.circular(5),
         border: Border.all(
-          color: const Color.fromARGB(255, 208, 63, 2).withOpacity(0.2),
+          color: const Color.fromARGB(255, 208, 63, 2).withAlpha(50),
         ),
       ),
       child: Row(

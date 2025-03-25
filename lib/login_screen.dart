@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'services/auth_service.dart';
+
+import 'admin_dashboard.dart';
+
 import 'package:automate/mechanic/mechanic_profile_screen.dart';
 import 'costumer/register_screen.dart';
 import 'costumer/profile_screen.dart';
-import 'services/auth_service.dart';
 
 final TextEditingController _emailController = TextEditingController();
 
 class Logining extends StatelessWidget {
-  // const Logining(this.register, {super.key});
-  // final void Function() register;
   const Logining({super.key});
 
   @override
@@ -59,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void _performLogin() async {
+  Future<bool> _performLoginAdmin() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
@@ -67,6 +70,61 @@ class _LoginScreenState extends State<LoginScreen> {
 
       try {
         final authService = AuthService();
+        UserCredential userCredential = await authService.adminSignin(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+
+        if (!mounted) return false;
+
+        // Check if the user is an admin
+        final adminDoc = await FirebaseFirestore.instance
+            .collection('admin')
+            .doc(userCredential.user!.uid)
+            .get();
+
+        if (adminDoc.exists) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const AdminDashboard()),
+          );
+          return true;
+        } else {
+          return false; // Explicit return if not an admin
+        }
+      } catch (e) {
+        if (!mounted) return false;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return false; // Return false if an exception occurs
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
+    }
+    return false; // Return false if validation fails
+  }
+
+  void _performLogin() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      if (await _performLoginAdmin()) {
+        return;
+      }
+
+      try {
+        final authService = AuthService();
+        // UserCredential userCredential =
         await authService.signInWithEmailAndPassword(
           email: _emailController.text,
           password: _passwordController.text,
@@ -75,7 +133,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
         if (!mounted) return;
 
-        // If we get here, authentication and user type verification succeeded
+        // Redirect based on user type
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(

@@ -62,7 +62,7 @@ class SearchFilterWidget extends StatelessWidget {
             label: Text(filter),
             onSelected: (selected) => onFilterChanged(filter),
             backgroundColor: Colors.white,
-            selectedColor: JobConstants.primaryColor.withOpacity(0.2),
+            selectedColor: JobConstants.primaryColor.withAlpha(50),
             checkmarkColor: JobConstants.primaryColor,
           ),
         )).toList(),

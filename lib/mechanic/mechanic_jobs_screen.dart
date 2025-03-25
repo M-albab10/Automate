@@ -119,7 +119,7 @@ class _MechanicJobsScreenState extends State<MechanicJobsScreen> {
 
     for (var doc in requests) {
       final data = doc.data() as Map<String, dynamic>;
-      final status = data['status'] ?? 'Pending';
+      final status = data['status'] ?? 'pending';
 
       // If the request is in progress, check if this mechanic made an offer
       if (status == 'In Progress') {

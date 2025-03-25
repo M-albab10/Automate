@@ -29,7 +29,7 @@ class CarService {
 
   // Get all cars for current user
   Stream<QuerySnapshot> getUserCars() {
-    if (currentUserId == null) throw Exception('No user logged in');
+    if (currentUserId == null) return const Stream.empty();
 
     return _firestore
         .collection('users')

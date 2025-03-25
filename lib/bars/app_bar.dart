@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final String pageName;
   final bool implyLeading;
-  final color;
+  final Color color;
 
   const AppBarWidget(
       {super.key,

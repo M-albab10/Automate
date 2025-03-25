@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../utils/constants.dart';
 import '../utils/formatters.dart';
-import '../utils/helpers.dart';
 
 void showJobDetailsDialog(
   BuildContext context,
@@ -15,16 +14,6 @@ void showJobDetailsDialog(
   Map<String, dynamic> data = request.data() as Map<String, dynamic>;
   String currentStatus = data['status'] ?? 'Pending';
   String currentUserId = auth.currentUser?.uid ?? '';
-  //String currentUserEmail = auth.currentUser?.email ?? ''; not using it
-
-  // Try to get a name to use
-  //String mechanicName = UserHelper.getMechanicName(auth); not using it
-
-
-
-  // Flag for editing
-  // bool isEditingExistingOffer = false;
-  // String existingOfferId = '';
 
   // Check if the mechanic already has an offer for this request
   showDialog(
@@ -43,9 +32,9 @@ void showJobDetailsDialog(
             );
           }
 
-         bool isEditingExistingOffer = false;
-         String existingOfferId = '';
-         Map<String, dynamic>? offerData;
+          bool isEditingExistingOffer = false;
+          String existingOfferId = '';
+          Map<String, dynamic>? offerData;
 
           // Check if an existing offer was found
           if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
@@ -54,51 +43,33 @@ void showJobDetailsDialog(
             existingOfferId = existingOffer.id;
             offerData = existingOffer.data() as Map<String, dynamic>;
             isEditingExistingOffer = true;
-             
-
-
           }
 
-          
           return AlertDialog(
             title: Text('Request Details: ${request.id.substring(0, 8)}...'),
             content: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _buildDetailItem('Car', data['car'] ?? 'N/A'),
-                    _buildDetailItem('Problem', data['problemDescription'] ?? 'Not specified'),
-                    _buildDetailItem('Location', data['city'] ?? 'Not specified'),
-                    _buildDetailItem(
-                    'Date',
-                    data['timestamp'] != null
-                        ? DateFormatter.formatTimestamp(data['timestamp'])
-                        : 'Not available'),
-                    _buildDetailItem('Current Status', currentStatus),
-
-                    const SizedBox(height: 16),
-                  
-                  ],
-                ),
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildDetailItem('Car', data['car'] ?? 'N/A'),
+                  _buildDetailItem(
+                      'Problem', data['problemDescription'] ?? 'Not specified'),
+                  _buildDetailItem('Location', data['city'] ?? 'Not specified'),
+                  _buildDetailItem(
+                      'Date',
+                      data['timestamp'] != null
+                          ? DateFormatter.formatTimestamp(data['timestamp'])
+                          : 'Not available'),
+                  _buildDetailItem('Current Status', currentStatus),
+                  const SizedBox(height: 16),
+                ],
               ),
-              actions: [
+            ),
+            actions: [
               Align(
                 alignment: Alignment.center,
                 child: ElevatedButton.icon(
-                  // onPressed: () {
-                  //   Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //       builder: (context) => SubmitOfferScreen(
-                  //         requestId: request.id,
-                  //         mechanicId: currentUserId,
-                  //         isEditingExistingOffer: isEditingExistingOffer, 
-                  //         existingOfferId: existingOfferId,
-                  //       ),
-                  //     ),
-                  //   );
-                  // },
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -108,17 +79,19 @@ void showJobDetailsDialog(
                           mechanicId: currentUserId,
                           isEditingExistingOffer: isEditingExistingOffer,
                           existingOfferId: existingOfferId,
-                          existingOfferData: isEditingExistingOffer ? offerData : null,
+                          existingOfferData:
+                              isEditingExistingOffer ? offerData : null,
                         ),
                       ),
                     );
                   },
 
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isEditingExistingOffer 
-                        ? Colors.blue 
+                    backgroundColor: isEditingExistingOffer
+                        ? Colors.blue
                         : JobConstants.primaryColor,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -128,8 +101,11 @@ void showJobDetailsDialog(
                     color: Colors.white,
                   ),
                   label: Text(
-                    isEditingExistingOffer ? 'Edit Your Offer' : 'Make an Offer!',
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    isEditingExistingOffer
+                        ? 'Edit Your Offer'
+                        : 'Make an Offer!',
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -138,7 +114,8 @@ void showJobDetailsDialog(
                   onPressed: () => Navigator.pop(context),
                   child: const Text('Close'),
                 ),
-              ),],
+              ),
+            ],
           );
         },
       );
