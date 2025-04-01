@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 class OffersService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  /// Loads all offers for a specific request
+  /// Loads all offers for a specific request from subcollection
   void loadOffers(String requestId) async {
     try {
       QuerySnapshot offersSnapshot = await _firestore
+          .collection('maintenance_requests')
+          .doc(requestId)
           .collection('offers')
-          .where('requestId', isEqualTo: requestId)
           .get();
 
       if (offersSnapshot.docs.isEmpty) {
@@ -61,83 +62,125 @@ class OffersService {
     }
   }
 
-  /// Gets a stream of offers for a specific request
+  // Gets a stream of offers for a specific request from subcollection
   Stream<QuerySnapshot> getOffersStream(String requestId) {
     return _firestore
+        .collection('maintenance_requests')
+        .doc(requestId)
         .collection('offers')
-        .where('requestId', isEqualTo: requestId)
         .snapshots();
   }
 
-  /// Accepts an offer and rejects all other offers for the same request
+  //Accepts an offer and rejects all other offers for the same request using subcollection
   Future<void> acceptOffer(
-      BuildContext context, String offerId, String requestId) async {
-    bool confirm = await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Accept Offer'),
-            content: const Text(
-                'Are you sure you want to accept this offer? Other offers will be automatically rejected.'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
+    BuildContext context, String offerId, String requestId) async {
+  bool confirm = await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Accept Offer'),
+          content: const Text(
+              'Are you sure you want to accept this offer? Other offers will be removed.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 208, 63, 2),
               ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 208, 63, 2),
-                ),
-                onPressed: () => Navigator.pop(context, true),
-                child:
-                    const Text('Accept', style: TextStyle(color: Colors.white)),
-              ),
-            ],
-          ),
-        ) ??
-        false;
+              onPressed: () => Navigator.pop(context, true),
+              child:
+                  const Text('Accept', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
+      ) ??
+      false;
 
-    if (!confirm) return;
+  if (!confirm) return;
 
-    try {
-      WriteBatch batch = _firestore.batch();
+  try {
+    WriteBatch batch = _firestore.batch();
 
-      // Get all offers for this request
-      QuerySnapshot offersSnapshot = await _firestore
-          .collection('offers')
-          .where('requestId', isEqualTo: requestId)
-          .get();
+    // Get all offers for this request from subcollection
+    QuerySnapshot offersSnapshot = await _firestore
+        .collection('maintenance_requests')
+        .doc(requestId)
+        .collection('offers')
+        .get();
 
-      // Update status of all offers
-      for (var doc in offersSnapshot.docs) {
-        if (doc.id == offerId) {
-          batch.update(doc.reference, {'status': 'Accepted'});
-        } else {
-          batch.update(doc.reference, {'status': 'Rejected'});
-        }
+    // Get the accepted offer to save its data
+    DocumentSnapshot? acceptedOfferDoc;
+    for (var doc in offersSnapshot.docs) {
+      if (doc.id == offerId) {
+        acceptedOfferDoc = doc;
       }
-
-      // Update the maintenance request status
-      DocumentReference requestRef =
-          _firestore.collection('maintenance_requests').doc(requestId);
-      batch.update(requestRef, {
-        'status': 'In Progress',
-        'acceptedOfferId': offerId,
-      });
-
-      await batch.commit();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Offer accepted successfully')),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
     }
-  }
 
-  /// Rejects a specific offer
-  Future<void> rejectOffer(BuildContext context, String offerId) async {
+    if (acceptedOfferDoc == null) {
+      throw Exception('Selected offer not found');
+    }
+
+    // Update the status of accepted offer
+    final acceptedOfferRef = _firestore
+        .collection('maintenance_requests')
+        .doc(requestId)
+        .collection('offers')
+        .doc(offerId);
+    
+    // Add acceptedAt timestamp to the offer
+    final offerData = acceptedOfferDoc.data() as Map<String, dynamic>;
+    batch.update(acceptedOfferRef, {
+      'status': 'accepted',
+      'acceptedAt': FieldValue.serverTimestamp(),
+    });
+
+    // Delete all other offers
+    for (var doc in offersSnapshot.docs) {
+      if (doc.id != offerId) {
+        // Delete this offer
+        batch.delete(doc.reference);
+      }
+    }
+
+    // Update the maintenance request with accepted offer details
+    DocumentReference requestRef =
+        _firestore.collection('maintenance_requests').doc(requestId);
+    
+    batch.update(requestRef, {
+      'status': 'in progress',
+      'acceptedOfferId': offerId,
+      'acceptedPrice': offerData['price'],
+      'acceptedMechanicId': offerData['mechanicId'],
+      'acceptedMechanicName': offerData['mechanicName'],
+      'acceptedAt': FieldValue.serverTimestamp(),
+      'statusUpdatedAt': FieldValue.serverTimestamp(),
+    });
+
+    await batch.commit();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Offer accepted successfully'),
+        backgroundColor: Colors.green,
+      ),
+    );
+    
+    // Navigate back to the maintenance screen
+    Navigator.pop(context);
+    
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error: $e'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
+  /// Rejects a specific offer using subcollection
+  Future<void> rejectOffer(BuildContext context, String offerId, String requestId) async {
     bool confirm = await showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -165,6 +208,8 @@ class OffersService {
 
     try {
       await _firestore
+          .collection('maintenance_requests')
+          .doc(requestId)
           .collection('offers')
           .doc(offerId)
           .update({'status': 'Rejected'});

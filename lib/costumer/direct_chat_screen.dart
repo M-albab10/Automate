@@ -1632,7 +1632,7 @@ class _DirectChatScreenState extends State<DirectChatScreen> {
     
     final textColor = isFromMe ? Colors.white : Colors.black87;
     final timeColor = isFromMe 
-        ? Colors.white.withOpacity(0.7) 
+        ? Colors.white.withAlpha(178) 
         : Colors.grey[600];
     
     final bubbleAlignment = isFromMe 
@@ -1663,7 +1663,7 @@ class _DirectChatScreenState extends State<DirectChatScreen> {
           borderRadius: bubbleRadius,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withAlpha(25),
               blurRadius: 3,
               offset: const Offset(0, 1),
             ),
@@ -1704,7 +1704,7 @@ class _DirectChatScreenState extends State<DirectChatScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withAlpha(12),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),

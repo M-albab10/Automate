@@ -18,7 +18,7 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
   final AuthService _authService = AuthService();
   Map<String, dynamic>? mechanicData;
   bool isLoading = true;
-  int _currentIndex = 2;
+  int _currentIndex = 3;
 
   @override
   void initState() {

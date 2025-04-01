@@ -1,3 +1,4 @@
+// 
 import 'package:flutter/material.dart';
 
 class JobConstants {
@@ -7,18 +8,28 @@ class JobConstants {
   // Filter options for job status
   static const List<String> filterOptions = [
     'All', 
-    'Pending', 
-    'In Progress', 
-    'Completed', 
-    'Fixed'
+    'pending', 
+    'parts ordered', 
+    'in progress', 
+    'ready for pickup'
   ];
+  
+  // Display names for filter options (capitalized)
+  static const Map<String, String> filterDisplayNames = {
+    'All': 'All',
+    'pending': 'Pending',
+    'parts ordered': 'Parts Ordered',
+    'in progress': 'In Progress',
+    'ready for pickup': 'Ready for Pickup',
+  };
   
   // Status colors for different job states
   static const Map<String, Color> statusColors = {
-    'Pending': Colors.orange,
-    'In Progress': Colors.blue,
-    'Completed': Colors.green,
-    'Fixed': Colors.green,
+    'pending': Colors.purple,
+    
+    'parts ordered': Colors.blue,
+    'in progress': Colors.orange,
+    'ready for pickup': Colors.green,
   };
   
   // Service type options

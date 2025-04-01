@@ -15,7 +15,7 @@ class SubmitOfferScreen extends StatefulWidget {
     required this.mechanicId,
     required this.isEditingExistingOffer,
     this.existingOfferId,
-    this.existingOfferData, 
+    this.existingOfferData,
   }) : super(key: key);
 
   @override
@@ -37,11 +37,16 @@ class _SubmitOfferScreenState extends State<SubmitOfferScreen> {
 
     // If editing an existing offer, prefill the form with its data
     if (widget.isEditingExistingOffer && widget.existingOfferData != null) {
-      _priceController.text = widget.existingOfferData?['price'].toString() ?? '';
-      _descriptionController.text = widget.existingOfferData?['description'] ?? '';
-      _estimatedTimeController.text = widget.existingOfferData?['estimatedTime'] ?? '';
-      _repairsNeededController.text = widget.existingOfferData?['repairsNeeded'] ?? '';
-      _serviceType = widget.existingOfferData?['serviceType'] ?? 'Parts with Labor';
+      _priceController.text =
+          widget.existingOfferData?['price'].toString() ?? '';
+      _descriptionController.text =
+          widget.existingOfferData?['description'] ?? '';
+      _estimatedTimeController.text =
+          widget.existingOfferData?['estimatedTime'] ?? '';
+      _repairsNeededController.text =
+          widget.existingOfferData?['repairsNeeded'] ?? '';
+      _serviceType =
+          widget.existingOfferData?['serviceType'] ?? 'Parts with Labor';
     }
   }
 
@@ -54,7 +59,12 @@ class _SubmitOfferScreenState extends State<SubmitOfferScreen> {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
       if (widget.isEditingExistingOffer) {
         // Update existing offer
-        await firestore.collection('offers').doc(widget.existingOfferId).update({
+        await firestore
+            .collection('maintenance_requests')
+            .doc(widget.requestId)
+            .collection('offers')
+            .doc(widget.existingOfferId)
+            .update({
           'serviceType': _serviceType,
           'price': double.parse(_priceController.text),
           'description': _descriptionController.text,
@@ -64,7 +74,11 @@ class _SubmitOfferScreenState extends State<SubmitOfferScreen> {
         });
       } else {
         // Submit new offer
-        await firestore.collection('offers').add({
+        await firestore
+            .collection('maintenance_requests')
+            .doc(widget.requestId)
+            .collection('offers')
+            .add({
           'requestId': widget.requestId,
           'mechanicId': widget.mechanicId,
           'serviceType': _serviceType,
@@ -79,7 +93,10 @@ class _SubmitOfferScreenState extends State<SubmitOfferScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(widget.isEditingExistingOffer ? "Offer updated successfully!" : "Offer submitted successfully!")),
+          SnackBar(
+              content: Text(widget.isEditingExistingOffer
+                  ? "Offer updated successfully!"
+                  : "Offer submitted successfully!")),
         );
         Navigator.pop(context);
       }
@@ -95,7 +112,9 @@ class _SubmitOfferScreenState extends State<SubmitOfferScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.isEditingExistingOffer ? "Edit Offer" : "Submit Offer")),
+      appBar: AppBar(
+          title: Text(
+              widget.isEditingExistingOffer ? "Edit Offer" : "Submit Offer")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -103,16 +122,21 @@ class _SubmitOfferScreenState extends State<SubmitOfferScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Service Type:", style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text("Service Type:",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               _buildServiceTypeRadios(),
               const SizedBox(height: 16),
-              _buildTextField(_priceController, "Estimated Cost (SAR)", Icons.attach_money, true),
+              _buildTextField(_priceController, "Estimated Cost (SAR)",
+                  Icons.attach_money, true),
               const SizedBox(height: 16),
-              _buildTextField(_estimatedTimeController, "Estimated Time to Finish", Icons.access_time, false),
+              _buildTextField(_estimatedTimeController,
+                  "Estimated Time to Finish", Icons.access_time, false),
               const SizedBox(height: 16),
-              _buildTextField(_repairsNeededController, "Repairs Needed", Icons.build, false),
+              _buildTextField(_repairsNeededController, "Repairs Needed",
+                  Icons.build, false),
               const SizedBox(height: 16),
-              _buildTextField(_descriptionController, "Additional Details", Icons.description, false),
+              _buildTextField(_descriptionController, "Additional Details",
+                  Icons.description, false),
               const SizedBox(height: 24),
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
@@ -121,10 +145,15 @@ class _SubmitOfferScreenState extends State<SubmitOfferScreen> {
                       child: ElevatedButton(
                         onPressed: _submitOffer,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: widget.isEditingExistingOffer ? Colors.blue : Colors.green,
+                          backgroundColor: widget.isEditingExistingOffer
+                              ? Colors.blue
+                              : Colors.green,
                         ),
-                        child: Text(widget.isEditingExistingOffer ? "Edit Offer" : "Submit Offer",style: const TextStyle(color: Colors.white)),
-                        
+                        child: Text(
+                            widget.isEditingExistingOffer
+                                ? "Edit Offer"
+                                : "Submit Offer",
+                            style: const TextStyle(color: Colors.white)),
                       ),
                     ),
             ],
@@ -153,7 +182,8 @@ class _SubmitOfferScreenState extends State<SubmitOfferScreen> {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String label, IconData icon, bool isNumeric) {
+  Widget _buildTextField(TextEditingController controller, String label,
+      IconData icon, bool isNumeric) {
     return TextFormField(
       controller: controller,
       keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
